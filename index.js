@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+cconst Discord = require("discord.js");
 
 const createCredentials = async(token, callback) => {
   const client = new Discord.Client();
@@ -7,11 +7,15 @@ const createCredentials = async(token, callback) => {
   return client
 }
 
-//HELLO IM FINALLY HERE AHHHHHHHHHH
-//Im making custom functions, each for one block
-//kk
-//wanna looka t discord api and create more custom functions
 
+const embedMessage = (title, channel, description, color) => {
+  const embed = new Discord.MessageEmbed()
+    .setTitle(title)
+    .setColor(color)
+    .setDescription(description);
+
+  channel.send(embed);
+}
 
 const initMessageListener = async(client, callback) => {
   client.on('message', msg => callback(msg, client))
@@ -21,8 +25,9 @@ const waitThenDo = async(inputFunc, time) => {
   setTimeout(inputFunc(), time*1000)
 }
 
-const emojify = async(word, client) => {
-  return client;
+const customEmoji = async(guild, name) => {
+  //console.log(guild.emojis.cache.find(ident => ident.name === name))
+  return guild.emojis.cache.find(ident => ident.name=name).toString()
 }
 
 //sending is one time
@@ -35,6 +40,9 @@ const replyToMessage = async(msg, reply) => {
   msg.reply(reply)
 }
 
+const initGuildJoinListener = (client, callback) => {
+  client.on('guildMemberAdd', member => callback(member))
+}
 
 const kickUser = async(user, errChannel, client) => {
   if (user) {
@@ -51,52 +59,3 @@ const initDisconnectListener = async(client, callback, msg) => {
   client.once('disconnect', () => {sendMessage(msg, "disconnect"); console.log('disconnect')})
 }
 
-const log1 = (log) => {
-  console.log(log.content)
-  return (log.content)
-}
-
-
-//our bot
-let counter = 0;
-createCredentials(token here, console.log("created")).then(client => {
-  initMessageListener(client, function(msg, client) {
-    if(msg.content.toLowerCase().includes("needy") && msg.content !== "Dont Call Me NEEDY!!"){
-      sendMessage(msg.channel, "Dont Call Me NEEDY!!")
-      //kickUser(msg.author.id, msg.channel, client)      
-    }
-    else if (msg.content === '!introduction'){
-      sendMessage(msg.channel, 'Hello fellow potato gang i am a bot created my people with big brains. Please worship our god the potatoe or TO THE GUILLOTINE. Boohoo, Lu Bu, died. (Lu Bu speaking) dude... SO uncool.');
-    }
-    else if (msg.content.toLowerCase().includes("dude, uncool") && msg.content !== "Who you callin uncool. This is a hate free zone dude. Dude, uncool"){
-      sendMessage(msg.channel, 'Who you callin uncool. This is a hate free zone dude. Dude, uncool');
-    }  
-    else if (msg.content.toLowerCase().includes("!spam") && counter <= 10){
-      sendMessage(msg.channel, 'I DON"T SPAM! U SPAM!SPAM! STOP SPAMMING');
-      counter += 1
-    } 
-    else if (msg.content.toLowerCase().includes("!spam") && counter >= 10){
-      sendMessage(msg.channel, 'I cant spam no more. Plz stop asking');
-    }
-    else if (msg.content === "!disconnect"){
-      initDisconnectListener(client, null, msg.channel);
-    }
-    else if (msg.content === "!emojify") {
-      sendMessage(msg.channel, emojify("yoylecake", client))
-    }
-    else if (msg.content.startsWith("!kick ")){
-      if (msg.member.hasPermission("KICK_MEMBERS")) { 
-        try{
-          kickUser(msg.mentions.members.first(), msg.channel, client)
-        }
-        catch(err){
-          sendMessage(msg.channel, `You shall'nt kick those more powerful than you, including ${msg.mentions.members.first()}`)
-        }
-      }
-      else {
-        console.log('dfd')
-        sendMessage(msg.channel, `You can't kick ${msg.mentions.members.first()}. He's too powerful for you!`)
-      }
-    }
-  })
-})
